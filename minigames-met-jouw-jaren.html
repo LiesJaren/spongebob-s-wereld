@@ -1,0 +1,1206 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#087f9d">
+    <meta name="description" content="Een rustige, lokale app met kleine onderwatermissies voor Jaren.">
+    <title>Jaren's Onderwatermissies</title>
+    <style>:root {
+  color-scheme: light;
+  --ocean-deep: #075b78;
+  --ocean: #087f9d;
+  --ocean-light: #d9f7f5;
+  --seafoam: #b7f0df;
+  --sunshine: #ffd860;
+  --coral: #ff8877;
+  --ink: #143747;
+  --muted: #53717b;
+  --paper: #fffdf6;
+  --line: #c9e6e5;
+  --shadow: 0 16px 42px rgba(8, 77, 100, .13);
+  font-family: "Trebuchet MS", "Avenir Next", Avenir, system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--ink);
+  background: linear-gradient(160deg, #c8f5f2 0%, #e8fbf2 48%, #fff8df 100%);
+  overflow-x: hidden;
+}
+
+button, input { font: inherit; }
+button { color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 4px solid #f6a63c;
+  outline-offset: 3px;
+}
+
+.ocean { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.bubble { position: absolute; width: 28px; height: 28px; border: 2px solid rgba(255,255,255,.68); border-radius: 50%; box-shadow: inset 3px 3px 8px #fff8, 0 0 14px #fff5; }
+.bubble-one { left: 7%; top: 26%; }
+.bubble-two { right: 12%; top: 19%; width: 15px; height: 15px; }
+.bubble-three { right: 6%; bottom: 24%; width: 38px; height: 38px; }
+.bubble-four { left: 17%; bottom: 11%; width: 13px; height: 13px; }
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  min-height: 72px;
+  padding: 10px clamp(16px, 5vw, 64px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: white;
+  background: rgba(5, 95, 122, .94);
+  box-shadow: 0 4px 18px #074f6530;
+  backdrop-filter: blur(12px);
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; font-size: 1.05rem; font-weight: 900; }
+.brand-mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; color: var(--ocean-deep); background: var(--sunshine); }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.wallet { display: flex; align-items: center; gap: 7px; padding: 9px 13px; border-radius: 999px; color: var(--ink); background: #fff8d8; font-weight: 900; }
+.wallet-label { font-weight: 700; }
+.icon-button { min-width: 44px; min-height: 44px; border: 1px solid #ffffff70; border-radius: 50%; color: white; background: #ffffff19; cursor: pointer; font-size: 1.15rem; }
+.app-shell { width: min(1120px, calc(100% - 32px)); min-height: calc(100vh - 144px); margin: 28px auto 110px; }
+.view { animation: rise-in .35s ease both; }
+.view[hidden] { display: none; }
+.notice { position: relative; z-index: 1; margin: 0 0 18px; padding: 14px 18px; border: 2px solid #e8a837; border-radius: 16px; background: #fff5d5; font-weight: 700; }
+.welcome-view { min-height: min(720px, calc(100vh - 190px)); display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: clamp(20px, 5vw, 70px); }
+.welcome-copy { padding: clamp(20px, 5vw, 60px) 0; }
+.eyebrow { margin: 0 0 10px; color: var(--ocean); font-size: .82rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+h1, h2, p { margin-top: 0; }
+h1 { max-width: 760px; margin-bottom: 16px; font-size: clamp(2.2rem, 5vw, 4.1rem); line-height: 1.03; letter-spacing: -.04em; }
+h2 { margin: 38px 0 16px; font-size: clamp(1.35rem, 2.5vw, 1.8rem); }
+.lead { max-width: 650px; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.25rem); line-height: 1.65; }
+.button { min-height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border: 0; border-radius: 16px; font-weight: 900; cursor: pointer; text-align: center; transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; }
+.button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 18px #134b5c29; }
+.button:disabled { opacity: .58; cursor: not-allowed; }
+.button-primary { color: #203b42; background: var(--sunshine); box-shadow: 0 5px 0 #e7af37; }
+.button-secondary { border: 2px solid var(--line); background: white; }
+.button-coral { color: #fff; background: #d94f4d; }
+.button-large { min-height: 60px; padding: 16px 28px; font-size: 1.1rem; }
+.button-full { width: 100%; }
+.sound-note, .fine-print { margin-top: 20px; color: var(--muted); font-size: .9rem; line-height: 1.55; }
+.welcome-avatar { position: relative; justify-self: center; width: min(100%, 430px); aspect-ratio: 1; }
+.welcome-avatar::before { position: absolute; inset: 8%; content: ""; border: 3px dashed #fff; border-radius: 50%; background: linear-gradient(145deg, #a4e7d8, #71d2db); box-shadow: var(--shadow); }
+.welcome-avatar img { position: absolute; left: 10%; top: 3%; width: 80%; height: 88%; object-fit: cover; object-position: center 28%; border: 9px solid #fff; border-radius: 46% 46% 40% 40%; box-shadow: var(--shadow); }
+.avatar-caption { position: absolute; bottom: 1%; left: 50%; z-index: 1; transform: translateX(-50%); white-space: nowrap; padding: 12px 22px; border-radius: 999px; background: var(--sunshine); font-weight: 900; box-shadow: var(--shadow); }
+.avatar-orbit span { position: absolute; z-index: 1; color: #fff; font-size: 2rem; }
+.avatar-orbit span:nth-child(1) { top: 3%; right: 16%; }
+.avatar-orbit span:nth-child(2) { top: 25%; left: 1%; }
+.avatar-orbit span:nth-child(3) { right: 2%; bottom: 25%; }
+.page-heading { display: flex; align-items: center; justify-content: space-between; gap: 22px; margin: 34px 0 24px; }
+.page-heading h1 { font-size: clamp(2rem, 4vw, 3.2rem); }
+.page-heading .lead { margin-bottom: 0; }
+.companion { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; padding: 8px 14px 8px 8px; border: 2px solid white; border-radius: 999px; background: #ffffffb8; color: var(--ocean-deep); font-weight: 900; box-shadow: 0 5px 16px #0e64731a; }
+.companion img { width: 54px; height: 54px; object-fit: cover; object-position: center 25%; border-radius: 50%; border: 3px solid #fff; animation: companion-walk 2s ease-in-out infinite alternate; }
+.mission-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.mission-card { position: relative; display: flex; min-height: 278px; flex-direction: column; padding: 22px; border: 2px solid white; border-radius: 24px; background: #fffdf2e8; box-shadow: var(--shadow); }
+.mission-icon { width: 68px; height: 68px; display: grid; place-items: center; margin-bottom: 14px; border-radius: 20px; background: var(--ocean-light); font-size: 2.2rem; }
+.mission-card h2 { margin: 0 0 3px; font-size: 1.25rem; }
+.mission-tag { margin: 0 0 18px; color: var(--muted); font-size: .9rem; }
+.mission-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+.points { color: #8d5b00; font-weight: 900; white-space: nowrap; }
+.status-pill { display: inline-flex; align-items: center; gap: 5px; width: fit-content; padding: 7px 10px; border-radius: 99px; background: #e5f5ee; color: #256448; font-size: .85rem; font-weight: 900; }
+.status-waiting { background: #fff0c8; color: #735308; }
+.status-approved { background: #dff3ea; color: #256448; }
+.back-link { min-height: 48px; padding: 8px 2px; border: 0; color: var(--ocean-deep); background: transparent; font-weight: 900; cursor: pointer; }
+.mission-play { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 24px; margin-top: 14px; }
+.step-card { min-height: 340px; padding: clamp(22px, 5vw, 44px); border: 2px solid white; border-radius: 28px; background: var(--paper); box-shadow: var(--shadow); }
+.step-count { color: var(--muted); font-weight: 900; }
+.step-instruction { margin: 32px 0; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 900; line-height: 1.2; }
+.step-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.helper-card { align-self: stretch; padding: 22px; border-radius: 24px; background: #d7f4eb; }
+.helper-card img { width: 96px; height: 96px; object-fit: cover; object-position: center 25%; border: 4px solid white; border-radius: 50%; }
+.helper-card h2 { margin: 12px 0 8px; font-size: 1.25rem; }
+.help-options { display: grid; gap: 10px; margin-top: 16px; }
+.help-options .button { min-height: 54px; padding: 10px; background: white; font-size: .92rem; }
+.room-scene { position: relative; min-height: 370px; overflow: hidden; border: 7px solid #fff; border-radius: 28px; background: linear-gradient(#8ce0e2 0 58%, #ffe1a0 58%); box-shadow: var(--shadow); }
+.room-scene::before { position: absolute; inset: 56% 0 0; content: ""; background: repeating-linear-gradient(165deg, transparent 0 32px, #f8c97855 33px 36px); }
+.room-window { position: absolute; top: 34px; left: 7%; width: 150px; height: 130px; display: flex; align-items: center; justify-content: space-around; border: 9px solid #fff5d7; border-radius: 50%; background: #55c5d9; font-size: 1.8rem; }
+.room-bed { position: absolute; left: 30%; bottom: 28px; z-index: 1; display: grid; width: 230px; height: 88px; place-items: center; border: 8px solid #e6a14e; border-radius: 24px 24px 8px 8px; background: #fff4d5; font-size: 3rem; }
+.room-shelf { position: absolute; top: 48px; right: 8%; font-size: 3.4rem; }
+.room-avatar { position: absolute; right: 12%; bottom: 22px; z-index: 2; width: 125px; height: 176px; object-fit: cover; object-position: center 20%; border: 5px solid white; border-radius: 48% 48% 25% 25%; animation: companion-walk 2.4s ease-in-out infinite alternate; }
+.room-items { position: absolute; z-index: 3; inset: 0; pointer-events: none; }
+.room-items span { position: absolute; font-size: 2.2rem; filter: drop-shadow(0 2px 2px #fff); }
+.room-items .avatar-equipment { right: calc(12% + 36px); bottom: 184px; z-index: 4; font-size: 2rem; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.shop-card { display: flex; align-items: center; gap: 14px; padding: 16px; border: 2px solid white; border-radius: 20px; background: #fffdf2e8; box-shadow: 0 7px 20px #0c60701a; }
+.shop-icon { font-size: 2.2rem; }
+.shop-info { flex: 1; }
+.shop-info strong, .shop-info span { display: block; }
+.shop-info span { margin-top: 4px; color: var(--muted); font-size: .9rem; }
+.shop-card .button { min-width: 92px; padding-inline: 12px; }
+.reward-list { display: grid; gap: 12px; }
+.reward-card { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 22px; border: 2px solid white; border-radius: 20px; background: #fffdf2e8; box-shadow: 0 7px 20px #0c60701a; }
+.reward-card p { margin: 5px 0 0; color: var(--muted); line-height: 1.5; }
+.parent-panel { margin: 18px 0; padding: clamp(18px, 4vw, 28px); border: 2px solid white; border-radius: 24px; background: #fffdf2e8; box-shadow: var(--shadow); }
+.parent-panel h2 { margin-top: 0; }
+.approval-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 0; border-top: 1px solid var(--line); }
+.approval-card:first-child { border-top: 0; }
+.approval-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.reward-form { display: grid; grid-template-columns: 1fr 180px; gap: 14px; align-items: end; }
+.reward-form label, .pin-dialog label { display: grid; gap: 7px; font-weight: 800; }
+.reward-form label:nth-child(3) { grid-column: 1 / -1; }
+input:not([type="checkbox"]):not([type="file"]) { width: 100%; min-height: 48px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; background: white; }
+.reward-form button { width: fit-content; }
+.parent-reward-list { display: grid; gap: 8px; margin-top: 16px; }
+.parent-reward { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.setting-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; min-height: 54px; border-top: 1px solid var(--line); font-weight: 800; }
+.setting-row input { width: 24px; height: 24px; accent-color: var(--ocean); }
+.export-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.import-button { position: relative; overflow: hidden; }
+.import-button input { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
+.empty-state { padding: 18px; border-radius: 16px; background: #eff9f3; color: var(--muted); }
+.bottom-nav { position: fixed; z-index: 4; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 4px; width: min(700px, calc(100% - 24px)); padding: 8px; border: 1px solid #fff; border-radius: 22px; background: #ffffffed; box-shadow: 0 10px 38px #044a6233; backdrop-filter: blur(12px); }
+.bottom-nav[hidden] { display: none; }
+.nav-button { flex: 1; min-height: 54px; display: grid; place-items: center; align-content: center; gap: 2px; border: 0; border-radius: 16px; background: transparent; font-size: .83rem; font-weight: 900; cursor: pointer; }
+.nav-button span { font-size: 1.25rem; }
+.nav-button[aria-current="page"] { color: var(--ocean-deep); background: #d9f5ef; }
+.pin-dialog { width: min(430px, calc(100% - 28px)); padding: 28px; border: 0; border-radius: 24px; background: var(--paper); box-shadow: 0 20px 70px #063f50a6; }
+.pin-dialog::backdrop { background: #063e50a3; backdrop-filter: blur(4px); }
+.pin-dialog h2 { margin: 0 0 8px; }
+.pin-dialog p:not(.eyebrow):not(.form-error) { color: var(--muted); line-height: 1.5; }
+.pin-dialog label { margin: 16px 0; }
+.dialog-close { float: right; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--ocean-light); font-size: 1.5rem; cursor: pointer; }
+.form-error { min-height: 1.3em; color: #ad3333; font-weight: 800; }
+.footer { padding: 15px 20px 30px; color: var(--muted); text-align: center; font-size: .88rem; }
+body.calm-mode *, body.calm-mode *::before, body.calm-mode *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+
+@keyframes rise-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes companion-walk { from { transform: translateX(-4px) rotate(-2deg); } to { transform: translateX(5px) rotate(2deg); } }
+
+@media (max-width: 760px) {
+  .topbar { min-height: 64px; padding-inline: 14px; }
+  .brand { font-size: .88rem; }
+  .wallet { gap: 5px; padding: 8px 10px; font-size: .88rem; }
+  .wallet-label { display: none; }
+  .app-shell { width: min(100% - 24px, 600px); margin-top: 15px; }
+  .welcome-view { min-height: auto; grid-template-columns: 1fr; gap: 8px; padding-top: 24px; }
+  .welcome-copy { padding: 10px 0; }
+  .welcome-avatar { width: min(80vw, 310px); }
+  .page-heading { align-items: stretch; flex-direction: column; }
+  .page-heading .companion { align-self: flex-end; max-width: 100px; flex-direction: column; gap: 3px; padding: 7px; text-align: center; font-size: .7rem; }
+  .companion img { width: 48px; height: 48px; }
+  .mission-grid { grid-template-columns: 1fr; }
+  .mission-card { min-height: 220px; }
+  .mission-play { grid-template-columns: 1fr; }
+  .helper-card { display: grid; grid-template-columns: 74px 1fr; align-items: center; column-gap: 12px; }
+  .helper-card img { width: 70px; height: 70px; grid-row: span 2; }
+  .helper-card h2 { margin: 0; }
+  .helper-card p { margin: 4px 0 0; }
+  .help-options { grid-column: 1 / -1; }
+  .room-scene { min-height: 310px; }
+  .room-window { width: 110px; height: 100px; font-size: 1.3rem; }
+  .room-bed { left: 12%; width: 180px; }
+  .room-avatar { right: 8%; width: 100px; height: 144px; }
+  .room-items .avatar-equipment { right: calc(8% + 28px); bottom: 150px; }
+  .reward-card { align-items: flex-start; flex-direction: column; }
+  .reward-form { grid-template-columns: 1fr; }
+  .reward-form label:nth-child(3) { grid-column: auto; }
+  .reward-form button { width: 100%; }
+  .bottom-nav { bottom: 7px; width: calc(100% - 14px); }
+  .nav-button { min-height: 52px; font-size: .7rem; }
+  .footer { padding-bottom: 90px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* Wasmandmissie */
+.laundry-heading {text-align:center;max-width:760px;margin:0 auto 20px}.laundry-heading h1{font-size:clamp(1.8rem,5vw,3rem);margin:10px 0}.laundry-progress{display:flex;align-items:center;justify-content:center;gap:12px}.laundry-progress>span{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:white;border:2px solid #84c8cc}.laundry-progress .collected{background:#087f72;color:white;border-color:#087f72}
+.laundry-scene{position:relative;min-height:365px;border:6px solid white;border-radius:32px;background:linear-gradient(180deg,#ffe5a4 0%,#ffcf76 70%,#dba764 70%,#edc691 100%);box-shadow:var(--shadow);display:flex;align-items:flex-end;justify-content:space-around;padding:125px 24px 25px;gap:24px;overflow:hidden}.pineapple-window{position:absolute;top:20px;left:30px;width:105px;height:95px;text-align:center;background:#83e0ed;border:9px solid #bf8241;border-radius:50%;font-size:26px;line-height:1.3}.scene-label{position:absolute;right:25px;top:40px;font-weight:bold;color:#764c24;font-size:1.1rem}.clothes-floor{display:grid;grid-template-columns:repeat(2,minmax(80px,140px));gap:15px;flex:1;max-width:340px}.clothing{border:3px solid transparent;border-radius:22px;background:#fff9e6;min-height:92px;cursor:pointer;padding:10px;box-shadow:0 5px 0 #ba8b4a}.clothing>span{font-size:44px;display:block}.clothing small{font-weight:bold;font-size:14px}.clothing.selected{border-color:#006f88;background:#d3fcff;transform:translateY(-5px)}.clothing-space{display:grid;place-items:center;color:#98692d;min-height:92px;font-size:32px}.laundry-basket{width:220px;min-height:185px;border:4px dashed #976329;background:#fff6da;border-radius:26px;cursor:pointer;padding:14px;position:relative}.laundry-basket:disabled{cursor:default;opacity:.85}.laundry-basket:not(:disabled){border:4px solid #087f9d;background:#edfffa;box-shadow:0 0 0 7px #fff8}.basket-icon{display:block;font-size:90px;line-height:1.1}.basket-clothes{display:block;font-size:25px;min-height:32px}.laundry-basket strong{display:block}.laundry-controls{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin:24px 0}.practice-note{text-align:center;max-width:650px;margin:16px auto;line-height:1.6;color:var(--muted)}
+@media(max-width:560px){.laundry-scene{padding:125px 12px 20px;gap:12px;min-height:400px}.clothes-floor{gap:10px}.laundry-basket{width:135px;min-height:170px;padding:9px}.basket-icon{font-size:70px}.clothing{padding:8px 3px}.clothing>span{font-size:36px}.scene-label{max-width:120px;right:16px}.laundry-heading .lead{font-size:1.05rem}}
+
+.quick-game{max-width:900px;margin:auto}.quick-scene{padding:28px;border:6px solid white;border-radius:30px;background:linear-gradient(145deg,#b8f3ed,#fff0be);box-shadow:var(--shadow)}.game-schoolbag .quick-scene{background:linear-gradient(145deg,#d9e7ff,#d7f8e9)}.game-plate .quick-scene{background:linear-gradient(145deg,#ffe1b5,#fff5d4)}.game-waste .quick-scene{background:linear-gradient(145deg,#b9e8f7,#e5f5d8)}.quick-count{display:inline-block;background:white;border-radius:30px;padding:10px 24px;font-weight:bold;color:#075b78}.quick-choices,.plate-trail{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}.quick-choice{min-width:130px;min-height:130px;padding:15px;border:3px solid white;border-radius:24px;background:#fffdf6;box-shadow:0 5px 0 #087f9d33;cursor:pointer;flex:1;max-width:200px}.quick-choice>span{display:block;font-size:52px;line-height:1.3}.quick-choice strong{display:block;margin-top:8px}.quick-choice:hover:not(:disabled){background:#fff1ad;transform:translateY(-3px)}.quick-choice.packed{background:#c7efde;color:#23604c;box-shadow:none}.quick-choice:disabled:not(.packed){opacity:.5;cursor:default}.quick-destination{display:flex;flex-direction:column;align-items:center;margin:25px auto 0;padding:14px;border:3px dashed #178199;border-radius:25px;background:#ffffffb0;max-width:330px;min-height:150px}.quick-destination>span{font-size:66px}.packed-items{font-size:28px;min-height:36px;margin-top:8px}.packing-list{padding:16px;background:white;border-radius:18px;margin-bottom:20px;text-align:center;font-weight:bold;line-height:1.8}.quick-feedback{text-align:center;min-height:48px;line-height:1.6;font-weight:bold;margin:22px 0;color:#075b78}.waste-object{text-align:center;font-size:80px}.object-name{text-align:center;font-weight:bold}.plate-trail .trail-step{max-width:220px}.game-plate .trail-step:not(:disabled){border-color:#087f9d;background:#fff1ad}
+@media(max-width:560px){.quick-scene{padding:18px 12px}.quick-choice{min-width:92px;min-height:112px;padding:10px 5px}.quick-choice>span{font-size:40px}.quick-choices,.plate-trail{gap:9px}.quick-choice strong{font-size:14px}.game-schoolbag .quick-choice{flex-basis:40%;max-width:none}.packing-list{font-size:14px}.plate-trail{flex-direction:column}.plate-trail .trail-step{max-width:none;width:100%;min-height:85px;display:flex;align-items:center;gap:16px;padding:8px 16px}.quick-destination{min-height:120px}}
+
+.avatar-picker{max-width:1120px;margin:18px auto;padding:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:#fffdf6;border-radius:20px}.avatar-picker label{position:relative;cursor:pointer}.avatar-picker input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}.avatar-picker span{font-size:14px}img[hidden]{display:none!important}
+</style>
+    
+  </head>
+  <body><div id="preview-warning" style="padding:20px;background:#fff0b3">Open dit gedownloade bestand in je browser. In een bestandsvoorbeeld werken de knoppen niet.</div>
+    <div class="ocean" aria-hidden="true">
+      <span class="bubble bubble-one"></span>
+      <span class="bubble bubble-two"></span>
+      <span class="bubble bubble-three"></span>
+      <span class="bubble bubble-four"></span>
+    </div>
+    <header class="topbar">
+      <a class="brand" href="#" data-action="welcome" aria-label="Naar welkom">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>Jaren's onderwatermissies</span>
+      </a>
+      <div class="topbar-right">
+        <div class="wallet" aria-live="polite">
+          <span aria-hidden="true">🪼</span>
+          <span id="wallet-count">0</span>
+          <span class="wallet-label">kwallen</span>
+        </div>
+        <button class="sound-toggle icon-button" data-action="toggle-voice" aria-label="Voorleesstem aan of uit" title="Voorleesstem aan of uit">
+          <span id="voice-icon" aria-hidden="true">🔈</span>
+        </button>
+      </div>
+    </header>
+
+    <aside class="avatar-picker"><label class="button button-secondary">Kies jouw Jaren-afbeelding<input id="avatar-file" type="file" accept="image/png,image/jpeg,image/webp"></label><span id="avatar-status">Kies jouw icon-512.png.</span></aside>
+    <main id="app" class="app-shell" tabindex="-1">
+      <div id="notice" class="notice" role="status" hidden></div>
+      <section id="welcome-view" class="view welcome-view">
+        <div class="welcome-copy">
+          <p class="eyebrow">Een klein avontuur, stap voor stap</p>
+          <h1>Welkom, kapitein Jaren!</h1>
+          <p class="lead">In de oceaan wachten kleine missies op jou. Kies een klus, vraag hulp als je die nodig hebt en maak samen thuis een verschil.</p>
+          <button class="button button-primary button-large" data-action="begin">Aye aye, kapitein!</button>
+          <p class="sound-note">De voorleesstem start pas als je op de knop drukt. Je kunt geluid altijd uitzetten.</p>
+        </div>
+        <div class="welcome-avatar">
+          <div class="avatar-orbit" aria-hidden="true"><span>✦</span><span>◦</span><span>✧</span></div>
+          <img data-jaren hidden alt="Jaren als vrolijke onderwaterheld">
+          <span class="avatar-caption">Kapitein Jaren</span>
+        </div>
+      </section>
+
+      <section id="missions-view" class="view" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Jouw avontuur van vandaag</p>
+            <h1>Hoi Jaren! Dit kun je vandaag doen.</h1>
+            <p class="lead">Kies samen een missie. Je mag altijd om hulp of pauze vragen.</p>
+          </div>
+          <div class="companion">
+            <img data-jaren hidden alt="">
+            <span>Jaren loopt mee!</span>
+          </div>
+        </div>
+        <div id="missions-list" class="mission-grid"></div>
+      </section>
+
+      <section id="mission-view" class="view" hidden>
+        <button class="back-link" data-action="missions">← Terug naar mijn missies</button>
+        <div id="mission-content"></div>
+      </section>
+
+      <section id="room-view" class="view" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Jouw eigen plekje</p>
+            <h1>Mijn onderwaterkamer</h1>
+            <p class="lead">Verdien kwallen met missies en kies iets leuks voor jouw kamer.</p>
+          </div>
+          <div class="companion">
+            <img data-jaren hidden alt="">
+            <span>Jaren kijkt mee!</span>
+          </div>
+        </div>
+        <div class="room-scene">
+          <div class="room-window"><span>🌊</span><span>🐠</span><span>🫧</span></div>
+          <div class="room-bed"><span>🛏️</span></div>
+          <div class="room-shelf"><span>🪸</span></div>
+          <div id="room-items" class="room-items" aria-live="polite"></div>
+          <img class="room-avatar" data-jaren hidden alt="Jaren in zijn kamer">
+        </div>
+        <h2>Spulletjes voor Jaren</h2>
+        <div id="avatar-shop" class="shop-grid"></div>
+        <h2>Spulletjes voor de kamer</h2>
+        <div id="furniture-shop" class="shop-grid"></div>
+      </section>
+
+      <section id="chest-view" class="view" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Samen afgesproken</p>
+            <h1>De echte schatkist</h1>
+            <p class="lead">Een ouder stelt een beloning en de afspraak in. Je ziet altijd wat het kost.</p>
+          </div>
+          <div class="companion">
+            <img data-jaren hidden alt="">
+            <span>Jaren spaart mee!</span>
+          </div>
+        </div>
+        <div id="rewards-list" class="reward-list"></div>
+        <h2>Dit gaan we doen</h2>
+        <div id="requests-list" class="reward-list"></div>
+      </section>
+
+      <section id="parent-view" class="view" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Alleen voor mama of Birger</p>
+            <h1>Ouderhoek</h1>
+            <p class="lead">Gegevens blijven op dit apparaat. Deze lokale PIN is alleen bedoeld om toevallig aantikken te voorkomen.</p>
+          </div>
+          <div class="companion">
+            <img data-jaren hidden alt="">
+            <span>Ouder keurt missies goed</span>
+          </div>
+        </div>
+        <div class="parent-panel">
+          <h2>Missies die op jou wachten</h2>
+          <div id="approvals-list"></div>
+        </div>
+        <div class="parent-panel">
+          <h2>Beloningsaanvragen</h2>
+          <div id="parent-requests"></div>
+        </div>
+        <div class="parent-panel">
+          <h2>Een echte beloning instellen</h2>
+          <form id="reward-form" class="reward-form">
+            <label>Beloning
+              <input name="title" maxlength="60" required placeholder="Bijvoorbeeld: samen een spel kiezen">
+            </label>
+            <label>Prijs in kwallen
+              <input name="price" type="number" min="1" max="500" step="1" required>
+            </label>
+            <label>Wat spreken jullie af?
+              <input name="appointment" maxlength="120" required placeholder="Bijvoorbeeld: vrijdag na het eten">
+            </label>
+            <button class="button button-primary" type="submit">Beloning toevoegen</button>
+          </form>
+          <div id="parent-rewards" class="parent-reward-list"></div>
+        </div>
+        <div class="parent-panel settings-panel">
+          <h2>Instellingen en voortgang</h2>
+          <label class="setting-row"><span>Voorleesstem</span><input id="voice-setting" type="checkbox"></label>
+          <label class="setting-row"><span>Rustige stand (minder beweging)</span><input id="calm-setting" type="checkbox"></label>
+          <div class="export-actions">
+            <button class="button button-secondary" data-action="export">Voortgang exporteren</button>
+            <label class="button button-secondary import-button">Voortgang herstellen
+              <input id="import-file" type="file" accept="application/json,.json">
+            </label>
+          </div>
+          <p class="fine-print">De app werkt lokaal op dit apparaat. De PIN is geen beveiliging voor gevoelige gegevens; er zijn geen online accounts of synchronisatie.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav id="bottom-nav" class="bottom-nav" aria-label="Hoofdnavigatie" hidden>
+      <button data-action="missions" class="nav-button" aria-current="page"><span aria-hidden="true">🧭</span>Missies</button>
+      <button data-action="room" class="nav-button"><span aria-hidden="true">🪸</span>Mijn kamer</button>
+      <button data-action="chest" class="nav-button"><span aria-hidden="true">🧰</span>Schatkist</button>
+      <button data-action="parent" class="nav-button"><span aria-hidden="true">🔒</span>Ouderhoek</button>
+    </nav>
+
+    <dialog id="pin-dialog" class="pin-dialog">
+      <form id="pin-form" method="dialog">
+        <button class="dialog-close" type="button" data-action="close-pin" aria-label="Sluiten">×</button>
+        <p class="eyebrow">Ouderhoek</p>
+        <h2 id="pin-title">Voer de ouder-PIN in</h2>
+        <p id="pin-description">De PIN voorkomt dat Jaren per ongeluk instellingen wijzigt.</p>
+        <label id="pin-confirm-wrap" hidden>PIN nog een keer
+          <input id="pin-confirm" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password">
+        </label>
+        <label>Vier cijfers
+          <input id="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="current-password" required>
+        </label>
+        <p id="pin-error" class="form-error" aria-live="polite"></p>
+        <button class="button button-primary button-full" type="submit">Verder</button>
+      </form>
+    </dialog>
+
+    <footer class="footer">Een rustig hulpmiddel voor echte klusjes thuis. Pauze nemen mag altijd.</footer>
+  <script>document.getElementById("preview-warning")?.remove();
+"use strict";
+
+const STORAGE_KEY = "jarens-onderwatermissies-v1";
+const emptyAvatar = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'/%3E";
+let avatarPath = emptyAvatar;
+try { avatarPath = localStorage.getItem("jarens-original-avatar") || emptyAvatar; } catch {}
+function applyAvatar() {
+  document.querySelectorAll("img[data-jaren], .helper-card img").forEach(img => { img.src = avatarPath; img.hidden = avatarPath === emptyAvatar; });
+  const hint = document.getElementById("avatar-status");
+  if (hint) hint.textContent = avatarPath === emptyAvatar ? "Kies jouw icon-512.png. De tijdelijke avatar is verwijderd." : "Jouw eigen Jaren is ingesteld op dit toestel.";
+}
+
+const starterMissions = [
+  {
+    id: "laundry",
+    title: "Kleren in de wasmand",
+    theme: "Wasmand-missie",
+    icon: "🧺",
+    points: 5,
+    steps: ["Pak de afgesproken vuile kleren.", "Breng ze naar de wasmand.", "Leg ze rustig in de mand."]
+  },
+  {
+    id: "toys",
+    title: "Speelgoed opruimen",
+    theme: "Opruimheld",
+    icon: "🧸",
+    points: 10,
+    steps: ["Kies samen één soort speelgoed.", "Stop het speelgoed in de juiste bak.", "Kijk samen of het afgesproken plekje klaar is."]
+  },
+  {
+    id: "plate",
+    title: "Bordje wegzetten",
+    theme: "Afruim-missie",
+    icon: "🍽️",
+    points: 5,
+    steps: ["Pak je eigen bordje.", "Breng het naar de afgesproken plek.", "Zet het neer op een veilige plek op kinderhoogte."]
+  }
+];
+starterMissions.push(
+  {id:"schoolbag",title:"Boekentas klaarmaken",theme:"Klaar voor de vaarschool",icon:"🎒",points:10,steps:["Kijk samen wat vandaag mee moet.","Stop de afgesproken spullen in je boekentas.","Zet je tas op de vaste plek."]},
+  {id:"waste",title:"Afval weggooien",theme:"Afval-Anker in de haven",icon:"♻️",points:3,steps:["Pak samen het afgesproken veilige afval.","Kies met een ouder de juiste bak.","Gooi het afval erin."]}
+);
+const quickGames = {
+ toys:{place:"De Ananas",title:"Alles in de speelgoedbak!",hint:"Tik op de drie speeltjes om ze op te ruimen.",items:[{icon:"🧸",name:"knuffel"},{icon:"🚗",name:"autootje"},{icon:"🧩",name:"puzzel"}],target:"🧺",targetName:"Speelgoedbak",done:"De speelplek is weer netjes!",real:"Nu thuis: kies samen één soort speelgoed en ruim die op."},
+ schoolbag:{place:"De vaarschool van Mevrouw Puff",title:"Wat gaat mee naar school?",hint:"Tik op brooddoos, drinkfles en boek. Het lijstje helpt je.",items:[{icon:"🥪",name:"brooddoos"},{icon:"🧴",name:"drinkfles"},{icon:"📘",name:"boek"}],target:"🎒",targetName:"Mijn boekentas",done:"Je oefentas is klaar!",real:"Nu thuis: kijk samen wat vandaag écht in je tas moet. Het oefenlijstje is een voorbeeld."},
+ plate:{place:"De Krokante Krab",title:"Breng je bordje naar de afruimplek",hint:"Tik op de volgende voetstap. Rustig lopen mag!",items:[{icon:"👣",name:"Pak je bordje"},{icon:"👣",name:"Loop naar de afruimplek"},{icon:"🍽️",name:"Zet je bordje neer"}],target:"🍽️",targetName:"Veilige afruimplek",done:"Het bordje staat op zijn plek!",real:"Nu thuis: breng je eigen bordje rustig naar de afgesproken veilige plek."},
+ waste:{place:"De haven van Biquini Broek",title:"Papier hoort bij papier!",hint:"Waar hoort dit schone, droge papier? Tik op de papierbak.",items:[{icon:"📄",name:"vel papier"},{icon:"📰",name:"krant"},{icon:"📦",name:"kartonnen doos"}],target:"♻️",targetName:"Papierbak",done:"De haven is weer een stukje netter!",real:"Nu thuis: vraag welk veilig afval je mag weggooien en in welke bak het hoort."}
+};
+const avatarItems = [
+  { id: "cap", title: "Werknemersmuts", price: 20, icon: "🧢" },
+  { id: "net", title: "Kwallenvangersnetje", price: 30, icon: "🥅" },
+  { id: "cape", title: "Superheldencape", price: 40, icon: "🦸" },
+  { id: "hat", title: "Piratenhoed", price: 60, icon: "🏴‍☠️" },
+  { id: "helmet", title: "Duikhelm", price: 80, icon: "🤿" }
+];
+const furnitureItems = [
+  { id: "lamp", title: "Schelpenlamp", price: 15, icon: "🐚" },
+  { id: "mat", title: "Zeesterrenmat", price: 25, icon: "⭐" },
+  { id: "aquarium", title: "Bubbelaquarium", price: 40, icon: "🐠" },
+  { id: "chest", title: "Schatkist", price: 60, icon: "🧰" },
+  { id: "window", title: "Groot raam", price: 80, icon: "🪟" }
+];
+
+const emptyState = () => ({
+  balance: 0,
+  experience: 0,
+  ownedAvatars: [],
+  ownedFurniture: [],
+  equippedAvatar: null,
+  tasksByDay: {},
+  rewards: [],
+  requests: [],
+  preferences: { voice: false, calm: false },
+  parentPin: null
+});
+
+let state = emptyState();
+let activeView = "welcome";
+let activeTaskId = null;
+let selectedLaundry = null;
+const laundryClothes = [{id:"shirt",icon:"👕",name:"T-shirt"},{id:"socks",icon:"🧦",name:"sokken"},{id:"shorts",icon:"🩳",name:"broek"},{id:"dress",icon:"👗",name:"jurkje"}];
+let pinPurpose = "enter";
+let persistenceError = "";
+let noticeTimer = 0;
+
+const byId = (id) => document.getElementById(id);
+const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+})[character]);
+
+function todayKey() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Brussels",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function readState() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return emptyState();
+  const parsed = JSON.parse(raw);
+  if (!parsed || typeof parsed !== "object" || !Number.isFinite(parsed.balance) || !parsed.tasksByDay) {
+    throw new Error("De opgeslagen voortgang heeft niet het verwachte formaat.");
+  }
+  return {
+    ...emptyState(),
+    ...parsed,
+    preferences: { ...emptyState().preferences, ...parsed.preferences },
+    tasksByDay: parsed.tasksByDay || {},
+    rewards: Array.isArray(parsed.rewards) ? parsed.rewards : [],
+    requests: Array.isArray(parsed.requests) ? parsed.requests : []
+  };
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    persistenceError = "";
+  } catch (error) {
+    persistenceError = `Opslaan op dit apparaat is niet gelukt: ${error.message}`;
+  }
+  renderNotice();
+}
+
+function renderNotice() {
+  const notice = byId("notice");
+  if (persistenceError) {
+    notice.textContent = `${persistenceError} Je voortgang blijft voorlopig alleen in dit tabblad bewaard.`;
+    notice.hidden = false;
+  } else {
+    notice.hidden = true;
+  }
+}
+
+function showNotice(message) {
+  const notice = byId("notice");
+  notice.textContent = message;
+  notice.hidden = false;
+  window.clearTimeout(noticeTimer);
+  noticeTimer = window.setTimeout(renderNotice, 4500);
+}
+
+function getTodayTasks() {
+  const key = todayKey();
+  if (!Array.isArray(state.tasksByDay[key])) {
+    state.tasksByDay[key] = starterMissions.map((mission) => ({
+      ...mission,
+      status: "todo",
+      step: 0
+    }));
+    saveState();
+  }
+  // Add newly available missions without replacing existing progress.
+  for (const mission of starterMissions) {
+    if (!state.tasksByDay[key].some(task => task.id === mission.id)) {
+      state.tasksByDay[key].push({...mission,status:"todo",step:0});
+      saveState();
+    }
+  }
+  return state.tasksByDay[key];
+}
+
+function render() {
+  applyAvatar();
+  byId("wallet-count").textContent = String(availableBalance());
+  byId("voice-icon").textContent = state.preferences.voice ? "🔈" : "🔇";
+  document.body.classList.toggle("calm-mode", Boolean(state.preferences.calm));
+  document.querySelectorAll(".view").forEach((view) => { view.hidden = view.id !== `${activeView}-view`; });
+  byId("bottom-nav").hidden = activeView === "welcome" || activeView === "mission";
+  document.querySelectorAll(".nav-button").forEach((button) => {
+    const selected = button.dataset.action === activeView;
+    if (selected) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  });
+  renderNotice();
+  if (activeView === "missions") renderMissions();
+  if (activeView === "mission") renderMission();
+  if (activeView === "room") renderRoom();
+  if (activeView === "chest") renderChest();
+  if (activeView === "parent") renderParent();
+  applyAvatar();
+}
+
+function availableBalance() {
+  const reserved = state.requests
+    .filter((request) => request.status === "pending")
+    .reduce((total, request) => total + request.price, 0);
+  return Math.max(0, state.balance - reserved);
+}
+
+function taskStatusLabel(task) {
+  return ({
+    todo: "Te doen",
+    in_progress: "Bezig",
+    waiting: "Wacht op ouder",
+    approved: "Goedgekeurd"
+  })[task.status] || "Te doen";
+}
+
+function renderMissions() {
+  const list = byId("missions-list");
+  list.innerHTML = getTodayTasks().map((task) => {
+    const action = task.status === "todo" ? "Start" : task.status === "in_progress" ? "Verder" : "Bekijk";
+    const statusClass = task.status === "waiting" ? "status-waiting" : task.status === "approved" ? "status-approved" : "";
+    return `<article class="mission-card">
+      <div class="mission-icon" aria-hidden="true">${task.icon}</div>
+      <h2>${escapeHtml(task.title)}</h2>
+      <p class="mission-tag">${escapeHtml(task.theme)}</p>
+      <span class="status-pill ${statusClass}">${taskStatusLabel(task)}</span>
+      <div class="mission-footer">
+        <span class="points">+${task.points} kwallen</span>
+        <button class="button button-primary" data-action="open-task" data-task-id="${escapeHtml(task.id)}">${action}</button>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+function renderMission() {
+  const task = getTodayTasks().find((item) => item.id === activeTaskId);
+  const content = byId("mission-content");
+  if (!task) {
+    content.innerHTML = `<p class="empty-state">Deze missie is niet beschikbaar. Kies een missie uit de lijst.</p>`;
+    return;
+  }
+  if (task.status === "waiting" || task.status === "approved") {
+    const approved = task.status === "approved";
+    content.innerHTML = `<div class="step-card">
+      <span class="status-pill ${approved ? "status-approved" : "status-waiting"}">${approved ? "Goedgekeurd" : "Wacht op ouder"}</span>
+      <h1>${approved ? "Goed gedaan, kapitein!" : "Laat het even zien"}</h1>
+      <p class="lead">${approved ? `Je verdiende ${task.points} kwallen. Je hebt geholpen met: ${escapeHtml(task.title)}.` : "Laat je missie aan mama of papa zien. Zij keuren de afgesproken kwallen goed."}</p>
+      <button class="button button-primary" data-action="missions">Terug naar mijn missies</button>
+    </div>`;
+    return;
+  }
+  if (task.id === "laundry" && !task.practiceDone) {
+    renderLaundry(task, content);
+    return;
+  }
+  if (quickGames[task.id] && !task.practiceDone) {
+    renderQuickGame(task, content); return;
+  }
+  const step = Math.min(task.step, task.steps.length - 1);
+  content.innerHTML = `<div class="mission-play">
+    <article class="step-card">
+      <p class="eyebrow">${escapeHtml(task.title)}</p>
+      <p class="step-count">Stap ${step + 1} van ${task.steps.length}</p>
+      <p class="step-instruction">${escapeHtml(task.steps[step])}</p>
+      <div class="step-actions">
+        <button class="button button-primary" data-action="next-step">${step === task.steps.length - 1 ? "Mijn taak is klaar" : "Gedaan"}</button>
+        <button class="button button-secondary" data-action="speak-task">🔊 Luister</button>
+      </div>
+    </article>
+    <aside class="helper-card">
+      <img src="${avatarPath}" alt="">
+      <h2>Jaren loopt mee!</h2>
+      <p>Jij doet de klus thuis. Vraag gerust om hulp.</p>
+      <div class="help-options">
+        <button class="button" data-action="help" data-message="Doe de eerste stap met mij.">Doe de eerste stap met mij</button>
+        <button class="button" data-action="help" data-message="Zeg nog eens wat ik moet doen.">Zeg het nog eens</button>
+        <button class="button" data-action="pause">Even pauze</button>
+      </div>
+    </aside>
+  </div>`;
+}
+
+function renderLaundry(task, content) {
+  const collected = task.practiceClothes || [];
+  const complete = collected.length === laundryClothes.length;
+  const selected = laundryClothes.find(item => item.id === selectedLaundry && !collected.includes(item.id));
+  content.innerHTML = `<div class="laundry-heading"><p class="eyebrow">De Ananas · Wasmand-Kwallenvangst</p>
+    <h1>${complete ? "Een mand vol geholpen!" : "Help de kleren naar de wasmand"}</h1>
+    <p class="lead" id="laundry-instruction" role="status">${complete ? "Goed geoefend! Nu gaan we thuis de echte kleren verzamelen." : selected ? `Je koos ${selected.name}. Tik nu op de wasmand.` : "Tik op een kledingstuk. Tik daarna op de wasmand."}</p>
+    <div class="laundry-progress" aria-label="${collected.length} van 4 kledingstukken opgeruimd">${laundryClothes.map(item => `<span class="${collected.includes(item.id) ? "collected" : ""}" aria-hidden="true">${collected.includes(item.id) ? "✓" : "○"}</span>`).join("")} <strong>${collected.length} / 4</strong></div></div>
+    <div class="laundry-scene"><div class="pineapple-window" aria-hidden="true">🐠<br>🫧</div><div class="scene-label" aria-hidden="true">Jaren’s Ananas</div>
+      <div class="clothes-floor" aria-label="Kleren op de vloer">${laundryClothes.map(item => collected.includes(item.id) ? `<div class="clothing-space" aria-hidden="true">✦</div>` : `<button class="clothing ${selected?.id === item.id ? "selected" : ""}" data-action="select-laundry" data-clothing="${item.id}" aria-label="Kies ${item.name}" aria-pressed="${selected?.id === item.id}"><span aria-hidden="true">${item.icon}</span><small>${item.name}</small></button>`).join("")}</div>
+      <button class="laundry-basket" data-action="basket-laundry" ${!selected ? "disabled" : ""} aria-label="Leg het gekozen kledingstuk in de wasmand"><span class="basket-clothes" aria-hidden="true">${collected.map(id => laundryClothes.find(item => item.id === id).icon).join("")}</span><span class="basket-icon" aria-hidden="true">🧺</span><strong>${complete ? "Alles zit erin!" : "In de wasmand!"}</strong></button>
+    </div>
+    <div class="laundry-controls">${complete ? `<button class="button button-primary button-large" data-action="real-laundry">Nu mijn echte klus →</button>` : `<button class="button button-secondary" data-action="laundry-hint">🔊 Help mij even</button>`}<button class="button button-secondary" data-action="pause">Even pauze</button></div>
+    <p class="practice-note">Eerst oefenen, dan thuis doen. Je krijgt 5 kwallen als een ouder je echte klus goedkeurt. Geen timer: neem rustig je tijd.</p>`;
+}
+
+function renderQuickGame(task, content) {
+  const game = quickGames[task.id];
+  const progress = task.quickProgress || 0;
+  const done = progress === 3;
+  const collected = task.quickCollected || [];
+  let controls;
+  if (task.id === "plate") {
+    controls = `<div class="plate-trail">${game.items.map((item,i)=>`<button class="quick-choice trail-step ${i < progress ? "packed" : ""}" data-action="quick-pick" data-choice="${i}" ${i !== progress ? "disabled" : ""}><span aria-hidden="true">${i < progress ? "✓" : item.icon}</span><strong>${item.name}</strong></button>`).join("")}</div>`;
+  } else if (task.id === "waste") {
+    controls = `<div class="waste-object" role="img" aria-label="${done ? "Alles gesorteerd" : game.items[progress].name}">${done ? "✨" : game.items[progress].icon}</div><p class="object-name">${done ? "Klaar!" : game.items[progress].name}</p><div class="quick-choices">${[{icon:"📄",name:"Papierbak",id:"paper"},{icon:"🥕",name:"Groentebak",id:"food"},{icon:"🗑️",name:"Restafval",id:"other"}].map(bin=>`<button class="quick-choice" data-action="quick-pick" data-choice="${bin.id}" ${done ? "disabled" : ""}><span aria-hidden="true">${bin.icon}</span><strong>${bin.name}</strong></button>`).join("")}</div>`;
+  } else {
+    const options = [...game.items];
+    if (task.id === "schoolbag") options.push({icon:"🧸",name:"knuffel"});
+    controls = `<div class="quick-choices">${options.map((item,i)=>`<button class="quick-choice ${collected.includes(i) ? "packed" : ""}" data-action="quick-pick" data-choice="${i}" ${collected.includes(i) || done ? "disabled" : ""}><span aria-hidden="true">${collected.includes(i) ? "✓" : item.icon}</span><strong>${item.name}</strong></button>`).join("")}</div>`;
+  }
+  content.innerHTML = `<article class="quick-game game-${task.id}"><header class="laundry-heading"><p class="eyebrow">${game.place} · Kort taakspelletje</p><h1>${done ? game.done : game.title}</h1><p class="lead">${done ? game.real : game.hint}</p><p class="quick-count" role="status">${progress} van 3 gedaan</p></header>
+  <div class="quick-scene">${task.id === "schoolbag" ? `<div class="packing-list">Mijn oefenlijstje: 🥪 brooddoos · 🧴 drinkfles · 📘 boek</div>` : ""}${controls}<div class="quick-destination"><span aria-hidden="true">${game.target}</span><strong>${game.targetName}</strong><div class="packed-items" aria-hidden="true">${game.items.slice(0,progress).map(item=>item.icon).join(" ")}</div></div></div>
+  <p id="quick-feedback" class="quick-feedback" role="status">${done ? "Goed geoefend! Het echte werk doen we samen thuis." : "Drie tikken, op jouw tempo. Je hoeft niet snel te zijn."}</p>
+  <div class="laundry-controls">${done ? `<button class="button button-primary button-large" data-action="quick-real">Nu mijn echte klus →</button><button class="button button-secondary" data-action="quick-replay">Nog eens spelen</button>` : ""}<button class="button button-secondary" data-action="pause">Even pauze</button></div><p class="practice-note">Oefenen geeft geen kwallen. Na je echte klus en oudergoedkeuring krijg je ${task.points} kwallen.</p></article>`;
+}
+
+function itemButton(item, category) {
+  const owned = category === "avatar" ? state.ownedAvatars.includes(item.id) : state.ownedFurniture.includes(item.id);
+  const equipped = category === "avatar" && state.equippedAvatar === item.id;
+  const action = owned ? (equipped ? "In gebruik" : category === "avatar" ? "Aantrekken" : "Neergezet") : `${item.price} 🪼`;
+  const disabled = owned && (category === "furniture" || equipped);
+  return `<article class="shop-card">
+    <span class="shop-icon" aria-hidden="true">${item.icon}</span>
+    <div class="shop-info"><strong>${escapeHtml(item.title)}</strong><span>${owned ? (equipped ? "Draagt Jaren nu" : category === "avatar" ? "Van jou!" : "Staat in de kamer") : `Prijs: ${item.price} kwallen`}</span></div>
+    <button class="button ${owned ? "button-secondary" : "button-primary"}" data-action="${owned ? (category === "avatar" ? "equip-item" : "owned-item") : "buy-item"}" data-item-id="${item.id}" data-category="${category}" ${disabled ? "disabled" : ""}>${action}</button>
+  </article>`;
+}
+
+function renderRoom() {
+  byId("avatar-shop").innerHTML = avatarItems.map((item) => itemButton(item, "avatar")).join("");
+  byId("furniture-shop").innerHTML = furnitureItems.map((item) => itemButton(item, "furniture")).join("");
+  const furniture = state.ownedFurniture.map((id, index) => {
+    const item = furnitureItems.find((entry) => entry.id === id);
+    if (!item) return "";
+    const positions = ["left:48%;top:38%", "left:18%;bottom:18%", "right:26%;top:22%", "left:53%;bottom:23%", "right:35%;top:13%"];
+    return `<span style="${positions[index % positions.length]}" title="${escapeHtml(item.title)}">${item.icon}</span>`;
+  }).join("");
+  const equipped = avatarItems.find((item) => item.id === state.equippedAvatar);
+  const avatarBadge = equipped
+    ? `<span class="avatar-equipment" title="${escapeHtml(equipped.title)}" aria-label="${escapeHtml(equipped.title)}">${equipped.icon}</span>`
+    : "";
+  byId("room-items").innerHTML = `${furniture}${avatarBadge}`;
+}
+
+function renderChest() {
+  const rewards = state.rewards.filter((reward) => reward.active);
+  byId("rewards-list").innerHTML = rewards.length ? rewards.map((reward) => {
+    const requested = state.requests.some((request) => request.rewardId === reward.id && ["pending", "confirmed"].includes(request.status));
+    return `<article class="reward-card">
+      <div><strong>${escapeHtml(reward.title)} · ${reward.price} kwallen</strong><p>${escapeHtml(reward.appointment)}</p></div>
+      <button class="button button-primary" data-action="request-reward" data-reward-id="${escapeHtml(reward.id)}" ${requested ? "disabled" : ""}>${requested ? "Al afgesproken" : "Deze wil ik"}</button>
+    </article>`;
+  }).join("") : `<p class="empty-state">Er staan nog geen beloningen klaar. Vraag mama of Birger om samen iets af te spreken.</p>`;
+  const activeRequests = state.requests.filter((request) => ["pending", "confirmed"].includes(request.status));
+  byId("requests-list").innerHTML = activeRequests.length ? activeRequests.map((request) => {
+    const status = request.status === "pending" ? "Aangevraagd — wacht op ouder" : "Afgesproken";
+    const action = request.status === "pending" ? "" : `<button class="button button-secondary" data-action="cancel-request" data-request-id="${escapeHtml(request.id)}">Annuleren</button>`;
+    return `<article class="reward-card"><div><strong>${escapeHtml(request.title)} · ${request.price} kwallen</strong><p>${escapeHtml(request.appointment)}<br>${status}</p></div>${action}</article>`;
+  }).join("") : `<p class="empty-state">Nog geen afspraken. Je kwallen blijven van jou.</p>`;
+}
+
+function waitingTasks() {
+  return Object.values(state.tasksByDay).flat().filter((task) => task.status === "waiting");
+}
+
+function renderParent() {
+  const approvals = waitingTasks();
+  byId("approvals-list").innerHTML = approvals.length ? approvals.map((task) => `
+    <div class="approval-card">
+      <div><strong>${escapeHtml(task.title)} · +${task.points} kwallen</strong><p class="mission-tag">${escapeHtml(task.day || "")}</p></div>
+      <div class="approval-actions">
+        <button class="button button-primary" data-action="approve-task" data-task-id="${escapeHtml(task.id)}" data-day="${escapeHtml(task.day || "")}">Goedkeuren: +${task.points}</button>
+        <button class="button button-secondary" data-action="return-task" data-task-id="${escapeHtml(task.id)}" data-day="${escapeHtml(task.day || "")}">Nog één stap samen</button>
+      </div>
+    </div>`).join("") : `<p class="empty-state">Er wachten geen missies op goedkeuring.</p>`;
+  const activeRequests = state.requests.filter((request) => ["pending", "confirmed"].includes(request.status));
+  byId("parent-requests").innerHTML = activeRequests.length ? activeRequests.map((request) => {
+    const actions = request.status === "pending"
+      ? `<button class="button button-primary" data-action="confirm-request" data-request-id="${escapeHtml(request.id)}">Afspraak bevestigen</button>
+         <button class="button button-secondary" data-action="reject-request" data-request-id="${escapeHtml(request.id)}">Afwijzen</button>`
+      : `<button class="button button-primary" data-action="complete-request" data-request-id="${escapeHtml(request.id)}">Als uitgevoerd markeren</button>
+         <button class="button button-secondary" data-action="cancel-request" data-request-id="${escapeHtml(request.id)}">Annuleren + terugbetalen</button>`;
+    return `<div class="approval-card"><div><strong>${escapeHtml(request.title)} · ${request.price} kwallen</strong><p class="mission-tag">${escapeHtml(request.appointment)}</p></div><div class="approval-actions">${actions}</div></div>`;
+  }).join("") : `<p class="empty-state">Er wachten geen beloningsaanvragen.</p>`;
+  byId("parent-rewards").innerHTML = state.rewards.length ? state.rewards.map((reward) => `
+    <div class="parent-reward"><span><strong>${escapeHtml(reward.title)}</strong> · ${reward.price} kwallen<br><small>${escapeHtml(reward.appointment)}</small></span>
+    <button class="button button-secondary" data-action="toggle-reward" data-reward-id="${escapeHtml(reward.id)}">${reward.active ? "Uitzetten" : "Weer aan"}</button></div>`).join("") : `<p class="empty-state">Voeg alleen beloningen toe die jullie echt hebben afgesproken.</p>`;
+  byId("voice-setting").checked = Boolean(state.preferences.voice);
+  byId("calm-setting").checked = Boolean(state.preferences.calm);
+}
+
+function speak(text) {
+  if (!state.preferences.voice) {
+    if (state.preferences.voice) showNotice("Voorlezen is uitgeschakeld.");
+    return;
+  }
+  if (!("speechSynthesis" in window)) {
+    showNotice("Voorlezen is niet beschikbaar in deze browser.");
+    return;
+  }
+  const voices = window.speechSynthesis.getVoices();
+  
+  // Try to find voice in priority order:
+  // 1. Voice matching "kapitein" or "jaren" (user's requested captain voice)
+  // 2. Dutch voice (nl-NL, "dutch", "nederlands")
+  // 3. Any available voice
+  let selectedVoice = null;
+  
+  // Strategy 1: Look for captain/jaren voice
+  const captainVoice = voices.find(v => 
+    v.name.toLowerCase().includes("kapitein") || 
+    v.name.toLowerCase().includes("jaren") ||
+    v.name.toLowerCase().includes("spongebob")
+  );
+  if (captainVoice) {
+    selectedVoice = captainVoice;
+  }
+  
+  // Strategy 2: Look for Dutch voice
+  if (!selectedVoice) {
+    const nlVoice = voices.find(v => v.lang === "nl-NL" || v.name.toLowerCase().includes("dutch") || v.name.toLowerCase().includes("nederlands"));
+    if (nlVoice) {
+      selectedVoice = nlVoice;
+    }
+  }
+  
+  // Strategy 3: Use first available voice
+  if (!selectedVoice && voices.length > 0) {
+    selectedVoice = voices[0];
+  }
+  
+  if (!selectedVoice) {
+    showNotice("Geen spraakstem beschikbaar. Geluid kan niet worden afgeleverd.");
+    return;
+  }
+  
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = selectedVoice.lang || "nl-NL";
+  utterance.rate = 0.88;
+  utterance.voice = selectedVoice;
+  window.speechSynthesis.speak(utterance);
+}
+
+function setView(view) {
+  activeView = view;
+  render();
+  byId("app").focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: state.preferences.calm ? "instant" : "smooth" });
+}
+
+function findTask(taskId, day = todayKey()) {
+  return (state.tasksByDay[day] || []).find((task) => task.id === taskId);
+}
+
+function requestParentAccess() {
+  const dialog = byId("pin-dialog");
+  pinPurpose = state.parentPin ? "enter" : "setup";
+  byId("pin-title").textContent = state.parentPin ? "Voer de ouder-PIN in" : "Kies een ouder-PIN";
+  byId("pin-description").textContent = state.parentPin
+    ? "De PIN voorkomt dat Jaren per ongeluk instellingen wijzigt."
+    : "Kies vier cijfers. Dit houdt de ouderhoek uit kleine handen, maar beschermt geen gevoelige gegevens.";
+  byId("pin-confirm-wrap").hidden = pinPurpose !== "setup";
+  byId("pin-error").textContent = "";
+  byId("pin-input").value = "";
+  byId("pin-confirm").value = "";
+  dialog.showModal();
+  byId("pin-input").focus();
+}
+
+function handlePinSubmit(event) {
+  event.preventDefault();
+  const pin = byId("pin-input").value;
+  const error = byId("pin-error");
+  if (!/^\d{4}$/.test(pin)) {
+    error.textContent = "Gebruik precies vier cijfers.";
+    return;
+  }
+  if (pinPurpose === "setup") {
+    if (byId("pin-confirm").value !== pin) {
+      error.textContent = "De PINs zijn niet hetzelfde. Probeer het nog eens.";
+      return;
+    }
+    state.parentPin = pin;
+    saveState();
+    byId("pin-dialog").close();
+    setView("parent");
+    return;
+  }
+  if (pin !== state.parentPin) {
+    error.textContent = "Deze PIN klopt niet.";
+    return;
+  }
+  byId("pin-dialog").close();
+  setView("parent");
+}
+
+function approveTask(taskId, day) {
+  const task = findTask(taskId, day);
+  if (!task || task.status !== "waiting") {
+    showNotice("Deze missie is al beoordeeld of niet meer beschikbaar.");
+    return;
+  }
+  task.status = "approved";
+  state.balance += task.points;
+  state.experience += task.points;
+  saveState();
+  render();
+  showNotice(`Goedgekeurd: ${task.points} kwallen erbij.`);
+}
+
+function buyItem(itemId, category) {
+  const items = category === "avatar" ? avatarItems : furnitureItems;
+  const ownedIds = category === "avatar" ? state.ownedAvatars : state.ownedFurniture;
+  const item = items.find((entry) => entry.id === itemId);
+  if (!item || ownedIds.includes(itemId)) return;
+  if (availableBalance() < item.price) {
+    showNotice(`Je hebt ${item.price} kwallen nodig. Je kunt rustig verder sparen.`);
+    return;
+  }
+  state.balance -= item.price;
+  ownedIds.push(itemId);
+  if (category === "avatar") state.equippedAvatar = itemId;
+  saveState();
+  render();
+  showNotice(`${item.title} is nu van jou!`);
+}
+
+function requestReward(rewardId) {
+  const reward = state.rewards.find((item) => item.id === rewardId && item.active);
+  if (!reward || state.requests.some((request) => request.rewardId === rewardId && ["pending", "confirmed"].includes(request.status))) return;
+  if (availableBalance() < reward.price) {
+    showNotice(`Je hebt ${reward.price} vrije kwallen nodig. Je kunt rustig verder sparen.`);
+    return;
+  }
+  state.requests.push({
+    id: crypto.randomUUID(),
+    rewardId: reward.id,
+    title: reward.title,
+    price: reward.price,
+    appointment: reward.appointment,
+    status: "pending"
+  });
+  saveState();
+  render();
+  showNotice("Je aanvraag is bewaard. Een ouder moet de afspraak nog bevestigen.");
+}
+
+function downloadProgress() {
+  const data = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(data);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `jarens-onderwatermissies-${todayKey()}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+  showNotice("Je voortgang is geëxporteerd.");
+}
+
+async function restoreProgress(file) {
+  if (!file) return;
+  try {
+    const imported = JSON.parse(await file.text());
+    if (!imported || typeof imported !== "object" || !Number.isFinite(imported.balance) || !imported.tasksByDay || !Array.isArray(imported.requests) || !Array.isArray(imported.rewards)) {
+      throw new Error("Dit bestand lijkt geen voortgangsbestand van deze app.");
+    }
+    state = { ...emptyState(), ...imported, preferences: { ...emptyState().preferences, ...imported.preferences } };
+    saveState();
+    render();
+    showNotice("De voortgang is hersteld.");
+  } catch (error) {
+    showNotice(`Herstellen is niet gelukt: ${error.message}`);
+  } finally {
+    byId("import-file").value = "";
+  }
+}
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-action]");
+  if (!button) return;
+  const action = button.dataset.action;
+  if (["quick-pick","quick-real","quick-replay"].includes(action)) {
+    const task = findTask(activeTaskId);
+    if (!task || !quickGames[task.id] || task.status !== "in_progress" || task.practiceDone) return;
+    const progress = task.quickProgress || 0;
+    if (action === "quick-real" && progress === 3) {task.practiceDone=true;saveState();render();return;}
+    if (action === "quick-replay" && progress === 3) {task.quickProgress=0;task.quickCollected=[];saveState();render();return;}
+    if (action !== "quick-pick" || progress >= 3) return;
+    const choice = button.dataset.choice;
+    let valid = false;
+    if (task.id === "plate") valid = choice === String(progress);
+    else if (task.id === "waste") valid = choice === "paper";
+    else {
+      const index = Number(choice);
+      task.quickCollected ||= [];
+      valid = Number.isInteger(index) && index >= 0 && index < 3 && !task.quickCollected.includes(index);
+      if (valid) task.quickCollected.push(index);
+    }
+    if (!valid) {
+      byId("quick-feedback").textContent = task.id === "schoolbag" ? "De knuffel staat niet op dit oefenlijstje. Kies brooddoos, drinkfles of boek." : "Dit is schoon, droog papier. Kies de papierbak. Samen proberen mag!";
+      return;
+    }
+    task.quickProgress = progress+1; saveState(); render();
+    byId("mission-content").querySelector(".quick-choice:not(:disabled), [data-action='quick-real']")?.focus({preventScroll:true});
+    return;
+  }
+  if (["select-laundry", "basket-laundry", "real-laundry", "laundry-hint"].includes(action)) {
+    const task = findTask(activeTaskId);
+    if (!task || task.id !== "laundry" || task.status !== "in_progress" || task.practiceDone) return;
+    if (action === "select-laundry" && laundryClothes.some(item => item.id === button.dataset.clothing) && !(task.practiceClothes || []).includes(button.dataset.clothing)) {
+      selectedLaundry = button.dataset.clothing;
+      render();
+      byId("mission-content").querySelector(".laundry-basket").focus({preventScroll:true});
+    }
+    if (action === "basket-laundry" && selectedLaundry) {
+      task.practiceClothes ||= [];
+      if (!task.practiceClothes.includes(selectedLaundry)) task.practiceClothes.push(selectedLaundry);
+      selectedLaundry = null;
+      saveState(); render();
+      byId("mission-content").querySelector(".clothing, [data-action='real-laundry']")?.focus({preventScroll:true});
+    }
+    if (action === "real-laundry" && task.practiceClothes?.length === laundryClothes.length) {
+      task.practiceDone = true; saveState(); render();
+      speak("Nu jouw beurt! Pak de afgesproken vuile kleren thuis.");
+    }
+    if (action === "laundry-hint") {
+      showNotice("Kies eerst een kledingstuk. Tik daarna op de grote wasmand. Samen doen mag!");
+      speak("Kies eerst een kledingstuk. Tik daarna op de grote wasmand. Samen doen mag!");
+    }
+    return;
+  }
+  if (action === "welcome") { event.preventDefault(); setView("welcome"); }
+  if (action === "begin") {
+    speak("Welkom, kapitein Jaren! Kies een missie en vraag hulp als je die nodig hebt.");
+    setView("missions");
+  }
+  if (action === "missions" || action === "room" || action === "chest") setView(action);
+  if (action === "parent") requestParentAccess();
+  if (action === "close-pin") byId("pin-dialog").close();
+  if (action === "toggle-voice") {
+    state.preferences.voice = !state.preferences.voice;
+    if (!state.preferences.voice && "speechSynthesis" in window) window.speechSynthesis.cancel();
+    saveState();
+    render();
+  }
+  if (action === "open-task") {
+    activeTaskId = button.dataset.taskId;
+    selectedLaundry = null;
+    const task = findTask(activeTaskId);
+    if (task && task.status === "todo") task.status = "in_progress";
+    saveState();
+    setView("mission");
+  }
+  if (action === "next-step") {
+    const task = findTask(activeTaskId);
+    if (!task || task.status !== "in_progress") return;
+    if (task.step < task.steps.length - 1) task.step += 1;
+    else {
+      task.status = "waiting";
+      task.day = todayKey();
+      showNotice("Goed gedaan! Laat je missie nu even aan mama of papa zien.");
+    }
+    saveState();
+    render();
+  }
+  if (action === "speak-task") {
+    const task = findTask(activeTaskId);
+    if (task) speak(task.steps[task.step]);
+  }
+  if (action === "help") showNotice(button.dataset.message);
+  if (action === "pause") {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    setView("missions");
+    showNotice("Je missie is bewaard. Even pauze nemen mag altijd.");
+  }
+  if (action === "approve-task") approveTask(button.dataset.taskId, button.dataset.day);
+  if (action === "return-task") {
+    const task = findTask(button.dataset.taskId, button.dataset.day);
+    if (task && task.status === "waiting") {
+      task.status = "in_progress";
+      saveState();
+      render();
+      showNotice("De missie staat weer op bezig. Een ouder helpt met de volgende stap.");
+    }
+  }
+  if (action === "buy-item") buyItem(button.dataset.itemId, button.dataset.category);
+  if (action === "equip-item") {
+    if (state.ownedAvatars.includes(button.dataset.itemId)) {
+      state.equippedAvatar = button.dataset.itemId;
+      saveState();
+      render();
+    }
+  }
+  if (action === "owned-item") showNotice("Dit spulletje staat al in je kamer.");
+  if (action === "request-reward") requestReward(button.dataset.rewardId);
+  if (action === "confirm-request") {
+    const request = state.requests.find((item) => item.id === button.dataset.requestId && item.status === "pending");
+    if (request) {
+      if (state.balance < request.price) {
+        showNotice("Deze reservering kan niet worden bevestigd: er zijn niet genoeg kwallen meer beschikbaar.");
+      } else {
+        state.balance -= request.price;
+        request.status = "confirmed";
+        saveState();
+        render();
+        showNotice("De afspraak is bevestigd en de kwallen zijn uitgegeven.");
+      }
+    }
+  }
+  if (action === "reject-request") {
+    const request = state.requests.find((item) => item.id === button.dataset.requestId && item.status === "pending");
+    if (request) {
+      request.status = "rejected";
+      saveState();
+      render();
+      showNotice("De aanvraag is afgewezen. De gereserveerde kwallen zijn weer vrij.");
+    }
+  }
+  if (action === "complete-request") {
+    const request = state.requests.find((item) => item.id === button.dataset.requestId && item.status === "confirmed");
+    if (request) {
+      request.status = "completed";
+      saveState();
+      render();
+      showNotice("De beloning is als uitgevoerd gemarkeerd.");
+    }
+  }
+  if (action === "cancel-request") {
+    const request = state.requests.find((item) => item.id === button.dataset.requestId && ["pending", "confirmed"].includes(item.status));
+    if (request) {
+      if (request.status === "confirmed") state.balance += request.price;
+      request.status = "cancelled";
+      saveState();
+      render();
+      showNotice("De afspraak is geannuleerd en de kwallen zijn terug.");
+    }
+  }
+  if (action === "toggle-reward") {
+    const reward = state.rewards.find((item) => item.id === button.dataset.rewardId);
+    if (reward) { reward.active = !reward.active; saveState(); render(); }
+  }
+  if (action === "export") downloadProgress();
+});
+
+byId("pin-form").addEventListener("submit", handlePinSubmit);
+byId("reward-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const data = new FormData(form);
+  const price = Number(data.get("price"));
+  const title = String(data.get("title")).trim();
+  const appointment = String(data.get("appointment")).trim();
+  if (!title || !appointment || !Number.isInteger(price) || price < 1 || price > 500) {
+    showNotice("Vul een beloning, een concrete afspraak en een prijs van 1 tot 500 in.");
+    return;
+  }
+  state.rewards.push({ id: crypto.randomUUID(), title, price, appointment, active: true });
+  saveState();
+  form.reset();
+  render();
+  showNotice("De afgesproken beloning staat klaar.");
+});
+byId("voice-setting").addEventListener("change", (event) => {
+  state.preferences.voice = event.currentTarget.checked;
+  if (!state.preferences.voice && "speechSynthesis" in window) window.speechSynthesis.cancel();
+  saveState();
+  render();
+});
+byId("calm-setting").addEventListener("change", (event) => {
+  state.preferences.calm = event.currentTarget.checked;
+  saveState();
+  render();
+});
+byId("import-file").addEventListener("change", (event) => restoreProgress(event.currentTarget.files[0]));
+
+byId("avatar-file").addEventListener("change", async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!["image/png","image/jpeg","image/webp"].includes(file.type) || file.size > 5*1024*1024) {
+    showNotice("Kies een PNG, JPG of WebP van maximaal 5 MB."); return;
+  }
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const candidate = String(reader.result);
+    const image = new Image();
+    image.onload = () => {
+      avatarPath = candidate;
+      try { localStorage.setItem("jarens-original-avatar", avatarPath); }
+      catch { showNotice("Jaren is ingesteld. Bewaren is niet gelukt; kies de afbeelding de volgende keer opnieuw."); }
+      applyAvatar();
+    };
+    image.onerror = () => showNotice("Deze afbeelding kon niet worden geopend.");
+    image.src = candidate;
+  };
+  reader.onerror = () => showNotice("Het bestand kon niet worden gelezen.");
+  reader.readAsDataURL(file);
+});
+try {
+  state = readState();
+} catch (error) {
+  state = emptyState();
+  persistenceError = `Opgeslagen voortgang kon niet worden gelezen: ${error.message} Er is niets overschreven; exporteer of herstel je gegevens via de ouderhoek.`;
+}
+render();
+</script></body>
+</html>

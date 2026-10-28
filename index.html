@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#087f9d">
+    <meta name="description" content="Een rustige, lokale app met kleine onderwatermissies voor Jaren.">
+    <title>Jaren's Onderwatermissies</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Onderwatermissies">
+    <link rel="icon" href="icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="styles.css?v=13">
+    <script src="voice/clips.js?v=1" defer></script>
+    <script src="app.js?v=14" defer></script>
+    <script src="games/practiceGames.js?v=4" defer></script>
+  </head>
+  <body>
+    <div class="ocean" aria-hidden="true">
+      <span class="bubble bubble-one"></span>
+      <span class="bubble bubble-two"></span>
+      <span class="bubble bubble-three"></span>
+      <span class="bubble bubble-four"></span>
+    </div>
+    <header class="topbar">
+      <a class="brand" href="#" data-action="welcome" aria-label="Naar welkom">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>Jaren's onderwatermissies</span>
+      </a>
+      <div class="topbar-right">
+        <div class="wallet" aria-live="polite">
+          <span aria-hidden="true">🪼</span>
+          <span id="wallet-count">0</span>
+          <span class="wallet-label">kwallen</span>
+        </div>
+        <button class="sound-toggle icon-button" data-action="toggle-voice" aria-label="Voorleesstem aan of uit" title="Voorleesstem aan of uit">
+          <span id="voice-icon" aria-hidden="true">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="app" class="app-shell" tabindex="-1">
+      <div id="notice" class="notice" role="status" hidden></div>
+      <section id="welcome-view" class="view welcome-view">
+        <div class="welcome-copy">
+          <p class="eyebrow">Een klein avontuur, stap voor stap</p>
+          <h1>Welkom, kapitein Jaren!</h1>
+          <p class="lead">In de oceaan wachten kleine missies op jou. Kies een klus, vraag hulp als je die nodig hebt en maak samen thuis een verschil.</p>
+          <div class="welcome-actions">
+            <button class="button button-primary button-large" data-action="begin">Aye aye, kapitein!</button>
+            <button id="intro-button" class="button button-secondary intro-button" data-action="play-intro" aria-pressed="false"><span aria-hidden="true">▶</span> Beluister de intro</button>
+          </div>
+          <p class="sound-note">De voorleesstem start pas als je op de knop drukt. Je kunt geluid altijd uitzetten.</p>
+          <audio id="intro-audio" src="Spongebob SquarePants - Intro (Dutch).mp3" preload="none"></audio>
+        </div>
+        <div class="welcome-avatar">
+          <div class="avatar-orbit" aria-hidden="true"><span>✦</span><span>◦</span><span>✧</span></div>
+          <img src="e6766199-f380-4f51-9668-b47f36cfb918.png" alt="Jaren als vrolijke onderwaterheld">
+          <span class="avatar-caption">Kapitein Jaren</span>
+        </div>
+      </section>
+
+      <section id="missions-view" class="view" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Jouw avontuur van vandaag</p>
+            <h1>Hoi Jaren! Dit kun je vandaag doen.</h1>
+            <p class="lead">Kies samen een missie. Je mag altijd om hulp of pauze vragen.</p>
+          </div>
+          <div class="companion">
+            <img src="e6766199-f380-4f51-9668-b47f36cfb918.png" alt="">
+            <span>Jaren loopt mee!</span>
+          </div>
+        </div>
+        <div id="missions-list" class="mission-grid"></div>
+        <div class="bubble-break">
+          <div class="bubble-break-text">
+            <span class="bubble-break-icon" aria-hidden="true">🫧</span>
+            <div>
+              <strong>Even bubbelen</strong>
+              <p>Een rustig spelletje zonder timer. Je mag stoppen wanneer je wilt.</p>
+            </div>
+          </div>
+          <button class="button button-secondary" data-action="bubble-break"><span aria-hidden="true">▶</span> Bubbels</button>
+        </div>
+      </section>
+
+      <section id="mission-view" class="view" hidden>
+        <button class="back-link" data-action="missions">← Terug naar mijn missies</button>
+        <div id="mission-content"></div>
+      </section>
+
+      <section id="room-view" class="view" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Jouw eigen plekje</p>
+            <h1>Mijn onderwaterkamer</h1>
+            <p class="lead">Verdien kwallen met missies en kies iets leuks voor jouw kamer.</p>
+            <p id="hero-badge" class="title-badge" aria-live="polite"></p>
+          </div>
+          <div class="companion">
+            <img src="e6766199-f380-4f51-9668-b47f36cfb918.png" alt="">
+            <span>Jaren kijkt mee!</span>
+          </div>
+        </div>
+        <div class="room-scene">
+          <div class="room-window"><span>🌊</span><span>🐠</span><span>🫧</span></div>
+          <div class="room-bed"><span>🛏️</span></div>
+          <div class="room-shelf"><span>🪸</span></div>
+          <div id="room-items" class="room-items" aria-live="polite"></div>
+          <img class="room-avatar" src="e6766199-f380-4f51-9668-b47f36cfb918.png" alt="Jaren in zijn kamer">
+        </div>
+        <h2>Spulletjes voor Jaren</h2>
+        <div id="avatar-shop" class="shop-grid"></div>
+        <h2>Spulletjes voor de kamer</h2>
+        <div id="furniture-shop" class="shop-grid"></div>
+      </section>
+
+      <section id="chest-view" class="view" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Samen afgesproken</p>
+            <h1>De echte schatkist</h1>
+            <p class="lead">Een ouder stelt een beloning en de afspraak in. Je ziet altijd wat het kost.</p>
+          </div>
+          <div class="companion">
+            <img src="e6766199-f380-4f51-9668-b47f36cfb918.png" alt="">
+            <span>Jaren spaart mee!</span>
+          </div>
+        </div>
+        <div id="rewards-list" class="reward-list"></div>
+        <h2>Dit gaan we doen</h2>
+        <div id="requests-list" class="reward-list"></div>
+      </section>
+
+      <section id="parent-view" class="view" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Alleen voor mama of Birger</p>
+            <h1>Ouderhoek</h1>
+            <p class="lead">Gegevens blijven op dit apparaat. Deze lokale PIN is alleen bedoeld om toevallig aantikken te voorkomen.</p>
+          </div>
+          <div class="companion">
+            <img src="e6766199-f380-4f51-9668-b47f36cfb918.png" alt="">
+            <span>Ouder keurt missies goed</span>
+          </div>
+        </div>
+        <div class="parent-panel">
+          <h2>Missies die op jou wachten</h2>
+          <div id="approvals-list"></div>
+        </div>
+        <div class="parent-panel">
+          <h2>Beloningsaanvragen</h2>
+          <div id="parent-requests"></div>
+        </div>
+        <div class="parent-panel">
+          <h2>Een echte beloning instellen</h2>
+          <form id="reward-form" class="reward-form">
+            <label>Beloning
+              <input name="title" maxlength="60" required placeholder="Bijvoorbeeld: samen een spel kiezen">
+            </label>
+            <label>Prijs in kwallen
+              <input name="price" type="number" min="1" max="500" step="1" required>
+            </label>
+            <label>Wat spreken jullie af?
+              <input name="appointment" maxlength="120" required placeholder="Bijvoorbeeld: vrijdag na het eten">
+            </label>
+            <button class="button button-primary" type="submit">Beloning toevoegen</button>
+          </form>
+          <div id="parent-rewards" class="parent-reward-list"></div>
+        </div>
+        <div class="parent-panel settings-panel">
+          <h2>Instellingen en voortgang</h2>
+          <label class="setting-row"><span>Voorleesstem</span><input id="voice-setting" type="checkbox"></label>
+          <label class="setting-row"><span>Rustige stand (minder beweging)</span><input id="calm-setting" type="checkbox"></label>
+          <div class="export-actions">
+            <button class="button button-secondary" data-action="export">Voortgang exporteren</button>
+            <label class="button button-secondary import-button">Voortgang herstellen
+              <input id="import-file" type="file" accept="application/json,.json">
+            </label>
+          </div>
+          <p class="fine-print">De app werkt lokaal op dit apparaat. De PIN is geen beveiliging voor gevoelige gegevens; er zijn geen online accounts of synchronisatie.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav id="bottom-nav" class="bottom-nav" aria-label="Hoofdnavigatie" hidden>
+      <button data-action="missions" class="nav-button" aria-current="page"><span aria-hidden="true">🧭</span>Missies</button>
+      <button data-action="room" class="nav-button"><span aria-hidden="true">🪸</span>Mijn kamer</button>
+      <button data-action="chest" class="nav-button"><span aria-hidden="true">🧰</span>Schatkist</button>
+      <button data-action="parent" class="nav-button"><span aria-hidden="true">🔒</span>Ouderhoek</button>
+    </nav>
+
+    <dialog id="pin-dialog" class="pin-dialog">
+      <form id="pin-form" method="dialog">
+        <button class="dialog-close" type="button" data-action="close-pin" aria-label="Sluiten">×</button>
+        <p class="eyebrow">Ouderhoek</p>
+        <h2 id="pin-title">Voer de ouder-PIN in</h2>
+        <p id="pin-description">De PIN voorkomt dat Jaren per ongeluk instellingen wijzigt.</p>
+        <label id="pin-confirm-wrap" hidden>PIN nog een keer
+          <input id="pin-confirm" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="new-password">
+        </label>
+        <label>Vier cijfers
+          <input id="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="current-password" required>
+        </label>
+        <p id="pin-error" class="form-error" aria-live="polite"></p>
+        <button class="button button-primary button-full" type="submit">Verder</button>
+      </form>
+    </dialog>
+
+    <dialog id="confirm-dialog" class="pin-dialog" aria-labelledby="confirm-title">
+      <form method="dialog">
+        <button class="dialog-close" type="button" data-action="close-confirm" aria-label="Sluiten">×</button>
+        <p id="confirm-eyebrow" class="eyebrow">Even checken</p>
+        <h2 id="confirm-title">Weet je het zeker?</h2>
+        <p id="confirm-body"></p>
+        <div class="dialog-actions">
+          <button id="confirm-yes" class="button button-primary" type="submit" value="yes">Ja</button>
+          <button id="confirm-no" class="button button-secondary" type="submit" value="no">Nee</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="practice-dialog" class="practice-dialog" aria-labelledby="practice-title">
+      <div class="practice-shell">
+        <header class="practice-head">
+          <div>
+            <p id="practice-eyebrow" class="eyebrow">Oefenen</p>
+            <h2 id="practice-title">Rustig oefenen</h2>
+          </div>
+          <button id="practice-stop" class="practice-stop" type="button">Stop</button>
+        </header>
+        <p id="practice-intro" class="practice-intro"></p>
+        <div class="practice-status">
+          <span id="practice-progress" class="practice-progress" aria-live="polite"></span>
+          <span id="practice-feedback" class="practice-feedback" aria-live="polite"></span>
+        </div>
+        <div id="practice-stage" class="practice-stage"></div>
+        <div id="practice-result" class="practice-result" hidden>
+          <span id="practice-result-icon" class="practice-result-icon" aria-hidden="true">🌟</span>
+          <h3 id="practice-result-title">Goed geoefend!</h3>
+          <p id="practice-result-text"></p>
+        </div>
+        <div class="practice-actions">
+          <button id="practice-speak" class="button button-secondary" type="button">🔊 Lees voor</button>
+          <button id="practice-done" class="button button-primary" type="button" hidden>✓ Klaar</button>
+        </div>
+      </div>
+    </dialog>
+
+    <footer class="footer">Een rustig hulpmiddel voor echte klusjes thuis. Pauze nemen mag altijd.</footer>
+  </body>
+</html>

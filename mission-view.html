@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="0; url=index.html#missions">
+    <meta name="theme-color" content="#087f9d">
+    <title>Jaren's Onderwatermissie - Uit taken</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ocean" aria-hidden="true">
+        <span class="bubble bubble-one"></span>
+        <span class="bubble bubble-two"></span>
+        <span class="bubble bubble-three"></span>
+        <span class="bubble bubble-four"></span>
+    </div>
+    <header class="topbar">
+        <a class="brand" href="#" data-action="missions">Jaren's onderwatermissies</a>
+        <div class="topbar-right">
+            <div class="wallet">🪼 <span>0</span> kwallen</div>
+            <button class="icon-button" data-action="toggle-voice" title="Voorleesstem">🔈</button>
+        </div>
+    </header>
+    <main class="app-shell" tabindex="-1">
+        <div class="notice" role="status" hidden></div>
+        <section class="view mission-view" hidden>
+            <button class="back-link" data-action="missions">← Terug naar mijn missies</button>
+            <div id="mission-content">
+                <p>Kies een missie van het scherm Missies</p>
+            </div>
+        </section>
+    </main>
+    <nav class="bottom-nav" aria-label="Hoofdnavigatie" hidden>
+        <button data-action="missions" class="nav-button active"><span aria-hidden="true">🧭</span>Missies</button>
+        <button data-action="room" class="nav-button"><span aria-hidden="true">🪸</span>Mijn kamer</button>
+        <button data-action="chest" class="nav-button"><span aria-hidden="true">🧰</span>Schatkist</button>
+        <button data-action="parent" class="nav-button"><span aria-hidden="true">🔒</span>Ouderhoek</button>
+    </nav>
+    <footer class="footer">Een rustig hulpmiddel voor echte klusjes thuis. Pauze nemen mag.</footer>
+</body>
+</html>
